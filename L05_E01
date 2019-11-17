@@ -1,0 +1,54 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+    char **scelte;
+    int num_scelte;
+} Livello;
+
+int princ_molt(int pos, Livello *val, char **sol, int k, int count);
+
+int main()
+{
+    int k,i,j,total;
+    char **sol;
+    FILE *fp;
+    Livello *valor;
+
+    fp=fopen("C:/Users/andri/Desktop/PoliTo/APA/CLion/L05/E01/brani.txt","r");
+    fscanf(fp,"%d", &k);
+    valor = (Livello*)malloc(k* sizeof(Livello));
+    for(i=0;i<k;i++){
+        fscanf(fp,"%d\n",&valor[i].num_scelte);
+        valor[i].scelte=(char**)malloc(valor[i].num_scelte* sizeof(char*));
+        for(j=0;j<valor[i].num_scelte;j++){
+            valor[i].scelte[j]=(char*)malloc(255*sizeof(char));
+            fscanf(fp,"%s\n",valor[i].scelte[j]);
+        }
+    }
+    sol=(char**)malloc(k* sizeof(char*));
+    printf("Soluzioni:\n");
+    total=princ_molt(0,valor,sol,k,0);
+    printf("In totale ci sono %d soluzioni.\n",total);
+    free(sol);
+    for (i = 0; i < k; i++)
+        free(valor[i].scelte);
+    free(valor);
+}
+
+int princ_molt(int pos, Livello *val, char **sol, int k, int count)
+{
+    int i;
+    if (pos >= k) {
+        for (i = 0; i < k; i++)
+            printf("%s ", sol[i]);
+        printf("\n");
+        return count+1;
+    }
+    for (i = 0; i < val[pos].num_scelte; i++) {
+        strcpy(sol[pos],val[pos].scelte[i]);
+        count = princ_molt(pos+1, val, sol, k, count);
+    }
+    return count;
+}
